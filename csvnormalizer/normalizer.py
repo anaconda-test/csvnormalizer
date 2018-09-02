@@ -1,6 +1,6 @@
 import csv
 from decimal import Decimal
-import fileinput
+import io
 import sys
 
 from dateutil.parser import parse as dateparse
@@ -12,19 +12,29 @@ PACIFIC = tz.gettz("America/Los_Angeles")
 
 
 def run():
-    process(fileinput.input())
+    process(sys.stdin.buffer)
 
 
-def process(csv_in_iter):
-    reader = csv.DictReader(csv_in_iter)
+def process(raw_input_buffer):
+    wrapper = io.TextIOWrapper(
+        raw_input_buffer, encoding='utf-8-sig', errors='replace')
+    reader = csv.DictReader(wrapper)
     writer = csv.DictWriter(sys.stdout, fieldnames(reader.fieldnames))
     writer.writeheader()
     for row in reader:
         out_row = {}
         for k, v in row.items():
             norm_fn = NORMALIZERS.get(k, lambda v, r: v)
-            out_row[k.upper()] = norm_fn(v, row)
-        writer.writerow(out_row)
+            try:
+                out_row[k.upper()] = norm_fn(v, row)
+            except:
+                print('WARNING: Dropping invalid row due to malformed'
+                      ' value "{v}" for column "{k}".'.format(v=v, k=k),
+                      file=sys.stderr)
+                out_row = None
+                break
+        if out_row:
+            writer.writerow(out_row)
 
 
 def fieldnames(field_list):
