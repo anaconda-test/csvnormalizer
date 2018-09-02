@@ -34,7 +34,7 @@ def fieldnames(field_list):
 def timestamp(raw, row=None):
     dt = dateparse(raw)
     if dt.tzinfo is None:
-        dt.astimezone(PACIFIC)
+        dt = dt.replace(tzinfo=PACIFIC)
     return dt.astimezone(EASTERN).isoformat()
 
 
