@@ -9,7 +9,9 @@ Requirements
 - Ubuntu 16.04 (Probably other unix-based systems would work.)
 - Python 3.6. (Probably any python3.2+ would work.)
 
-1. Install: `pip install git+ssh://git@github.com/anybodys/csvnormalizer.git`. If you don't have ssh setup for git, try `pip install https://github.com/anybodys/csvnormalizer.git` but you should really set up ssh!
+1. Install: `pip install git+ssh://git@github.com/anybodys/csvnormalizer.git`.
+   - If you don't have ssh setup for GitHub, try `pip install https://github.com/anybodys/csvnormalizer.git`. But first, I strongly encourage you to [set up ssh](https://help.github.com/articles/connecting-to-github-with-ssh/)!
+   - Note: You may need the `--user` flag.
 1. Run: `cat [your input file] | kmd-csvnormalizer`. Note: Package name is prefixed with the developer's name to avoid conflicts with other implementations.
 
 
