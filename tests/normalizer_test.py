@@ -1,7 +1,6 @@
-from contextlib import redirect_stdout
+from contextlib import redirect_stderr, redirect_stdout
 from decimal import Decimal
 import io
-from unittest import mock
 from unittest import TestCase
 
 from csvnormalizer import normalizer
@@ -67,7 +66,7 @@ class NormalizerTest(TestCase):
     def test_process_sample(self):
         out = io.StringIO()
         with redirect_stdout(out):
-            with open('samples/sample.csv') as f:
+            with open('samples/sample.csv', mode='rb') as f:
                 normalizer.process(f)
 
         out_lines = out.getvalue().splitlines()
@@ -75,3 +74,31 @@ class NormalizerTest(TestCase):
         with open('samples/out_sample.csv') as expected:
             for i, line in enumerate(expected):
                 self.assertEqual(out_lines[i], line.strip())
+
+    def test_process_sample_with_broken_utf8(self):
+        out = io.StringIO()
+        with redirect_stdout(out):
+            with open('samples/sample-with-broken-utf8.csv', mode='rb') as f:
+                normalizer.process(f)
+
+        out_lines = out.getvalue().splitlines()
+        self.assertEqual(10, len(out_lines))
+        with open('samples/out_sample-with-broken-utf8.csv') as expected:
+            for i, line in enumerate(expected):
+                self.assertEqual(out_lines[i], line.strip())
+
+    def test_process_sample_with_invalid(self):
+        err = io.StringIO()
+        out = io.StringIO()
+        with redirect_stderr(err):
+            with redirect_stdout(out):
+                with open('samples/sample-with-invalid.csv', mode='rb') as f:
+                    normalizer.process(f)
+
+        # Correct number of rows (dropped 1).
+        out_lines = out.getvalue().splitlines()
+        self.assertEqual(9, len(out_lines))
+        # Error logged.
+        err_lines = err.getvalue().splitlines()
+        self.assertEqual(1, len(err_lines))
+        self.assertTrue('dropping invalid row' in err_lines[0].lower())
