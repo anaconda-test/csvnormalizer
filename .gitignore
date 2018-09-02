@@ -1,0 +1,12 @@
+# Py byte files
+*.pyc
+__pycache__
+
+# Emacs backups
+*~
+
+# Generated files
+build
+dist
+*.egg-info
+*.eggs
