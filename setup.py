@@ -3,7 +3,7 @@ from setuptools import setup
 
 setup(
     name='kmd-csvnormalizer',
-    version='0.0.0.path',
+    version='0.0.1',
     description='CSV Normalizer',
     author='Krista Davis',
     url='https://github.com/anybodys/kmd-csvnormalizer',
